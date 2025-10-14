@@ -1,6 +1,7 @@
 Flask==3.0.3
 Flask-Cors==4.0.1
 Flask-Mail==0.9.1
+Flask-SQLAlchemy==3.0.3
 fastapi==0.111.1
 uvicorn==0.30.3
 pandas

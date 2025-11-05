@@ -29,7 +29,7 @@ app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = "chacozinha14@gmail.com"       # <-- altere aqui
 app.config["MAIL_PASSWORD"] = "avzm idxi kqtj ykdb" # <-- altere aqui
-app.config["MAIL_DEFAULT_SENDER"] = ("Chá de Cozinha", "schacozinha14@gmail.com")
+app.config["MAIL_DEFAULT_SENDER"] = ("Chá de Cozinha", "chacozinha14@gmail.com")
 
 mail = Mail(app)
 
@@ -177,4 +177,4 @@ def serve(path):
             return "index.html not found", 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

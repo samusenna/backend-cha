@@ -6,8 +6,6 @@ from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 from flask_mail import Mail, Message  # Flask-Mail
 
-
-
 # NÃO ALTERAR: adiciona caminho para imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -23,7 +21,6 @@ from src.routes.presentes import presentes_bp
 # =======================================
 # 📧 CONFIGURAÇÃO DE E-MAIL (SMTP)
 # =======================================
-# Exemplo com Gmail — substitua pelos seus dados
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
@@ -88,7 +85,28 @@ presentes = [
     {"id": 46, "nome": "Batedeira"},
     {"id": 47, "nome": "Ferro de passar"},
     {"id": 48, "nome": "Chaleira Elétrica"},
-    {"id": 49, "nome": "Concha para sorvete"}
+    {"id": 49, "nome": "Concha para sorvete"},
+    {"id": 50, "nome": "Pratinhos de sobremesa"},
+    {"id": 51, "nome": "Mini processador"},
+    {"id": 52, "nome": "Utensilios silicone"},
+    {"id": 53, "nome": "Amolador de facas"},
+    {"id": 54, "nome": "Jogo de pratos"},
+    {"id": 55, "nome": "Conjunto refratarios"},
+    {"id": 56, "nome": "Saladeira"},
+    {"id": 57, "nome": "Porta Frios"},
+    {"id": 58, "nome": "Porta Ovos"},
+    {"id": 59, "nome": "Tigela Bowl"},
+    {"id": 60, "nome": "Pipoqueira"},
+    {"id": 61, "nome": "Balde"},
+    {"id": 62, "nome": "Mop Spray"},
+    {"id": 63, "nome": "Varal Retratil"},
+    {"id": 64, "nome": "Rodo"},
+    {"id": 65, "nome": "Vassoura"},
+    {"id": 66, "nome": "Tabua de Passar"},
+    {"id": 67, "nome": "Pá de Lixo"},
+    {"id": 68, "nome": "Pano de Chão"},
+    {"id": 69, "nome": "Kit Café (Garrafa termica + Coador filtro de cafe)"},
+    {"id": 70, "nome": "Jogo de cama Queen"}
 ]
 
 # Função para criar CSV se não existir
@@ -146,17 +164,27 @@ def listar_presentes():
     ]
     return jsonify(presentes_disponiveis)
 
-# Endpoint POST para registrar escolha e enviar e-mail
+# Endpoint POST para registrar escolha e enviar e-mail (com validação anti-duplicidade)
 @app.route("/escolher-presente", methods=["POST"])
 def escolher_presente():
     dados = request.get_json()
     if not dados or "convidado" not in dados or "presente" not in dados:
         return jsonify({"erro": "Dados inválidos"}), 400
 
-    salvar_escolha_csv(dados["convidado"], dados["presente"])
-    enviar_csv_por_email()  # <-- envia o CSV atualizado
-    print(f"Convidado {dados['convidado']} escolheu {dados['presente']}")
+    presente = dados["presente"].strip().lower()
 
+    # 🔍 Verifica se o presente já foi escolhido
+    nomes_escolhidos = carregar_presentes_escolhidos()
+    if presente in nomes_escolhidos:
+        return jsonify({
+            "erro": "Este presente já foi escolhido por outra pessoa. Atualize a página e selecione outro."
+        }), 409  # 409 = conflito
+
+    # ✅ Se não foi escolhido, grava e envia
+    salvar_escolha_csv(dados["convidado"], dados["presente"])
+    enviar_csv_por_email()
+
+    print(f"Convidado {dados['convidado']} escolheu {dados['presente']}")
     return jsonify({"sucesso": True, "mensagem": "Escolha registrada e e-mail enviado!"}), 200
 
 # Servir frontend
